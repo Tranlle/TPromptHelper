@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TPromptHelper.Desktop.ViewModels"
+             xmlns:views="using:TPromptHelper.Desktop.Views"
+             x:Class="TPromptHelper.Desktop.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel"
+             MinWidth="700" MinHeight="480">
+
+    <TabControl Margin="0">
+
+        <!-- 主题 -->
+        <TabItem Header="主题">
+            <StackPanel Spacing="20" Margin="24">
+                <TextBlock Text="界面主题" Classes="section-label" />
+                <StackPanel Spacing="12">
+                    <RadioButton Content="深色主题（Dark）"
+                                 IsChecked="{Binding IsDarkTheme}"
+                                 GroupName="Theme" />
+                    <RadioButton Content="浅色主题（Light）"
+                                 IsChecked="{Binding IsDarkTheme, Converter={x:Static BoolConverters.Not}}"
+                                 GroupName="Theme" />
+                </StackPanel>
+                <TextBlock Text="主题切换即时生效，下次启动时将恢复默认深色主题。"
+                           Classes="meta-text" TextWrapping="Wrap" />
+            </StackPanel>
+        </TabItem>
+
+        <!-- 模型管理 -->
+        <TabItem Header="模型管理">
+            <views:ModelSettingsView DataContext="{Binding ModelSettings}" />
+        </TabItem>
+
+        <!-- 关于 -->
+        <TabItem Header="关于">
+            <StackPanel Spacing="20" Margin="24" MaxWidth="480">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="TPromptHelper" FontSize="22"
+                               FontWeight="Bold" Foreground="#E0E0E0" />
+                    <TextBlock Text="提示词优化器" FontSize="14" Foreground="#888888" />
+                </StackPanel>
+
+                <Rectangle Height="1" Fill="{DynamicResource AppSeparatorBrush}" />
+
+                <StackPanel Spacing="10">
+                    <StackPanel Spacing="3">
+                        <TextBlock Text="功能简介" Classes="section-label" />
+                        <TextBlock TextWrapping="Wrap" Foreground="#CCCCCC" FontSize="13"
+                                   Text="TPromptHelper 是一款本地运行的提示词优化工具，支持对接多种大语言模型，通过结构化、少样本、思维链等策略将原始输入转化为高质量的提示词。" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="3">
+                        <TextBlock Text="支持的提供商" Classes="section-label" />
+                        <TextBlock Foreground="#CCCCCC" FontSize="13"
+                                   Text="OpenAI · Anthropic · 通义千问（Qwen）· Kimi · Ollama（本地）· 自定义端点" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="3">
+                        <TextBlock Text="数据存储" Classes="section-label" />
+                        <TextBlock Foreground="#CCCCCC" FontSize="13" TextWrapping="Wrap"
+                                   Text="所有数据保存在本地 SQLite 数据库，API Key 使用 AES-256-GCM 加密存储，不上传任何数据到第三方服务器。" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </TabItem>
+
+    </TabControl>
+</UserControl>

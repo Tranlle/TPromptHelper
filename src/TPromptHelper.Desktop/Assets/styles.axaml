@@ -1,0 +1,217 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- App Title -->
+    <Style Selector="TextBlock.app-title">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource AppPrimaryTextBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,16,0" />
+    </Style>
+
+    <!-- Toolbar -->
+    <Style Selector="Border.toolbar">
+        <Setter Property="Background" Value="{DynamicResource AppToolbarBrush}" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="Height" Value="46" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AppSeparatorBrush}" />
+    </Style>
+
+    <!-- Sidebar -->
+    <Style Selector="Border.sidebar">
+        <Setter Property="Background" Value="{DynamicResource AppSidebarBrush}" />
+        <Setter Property="BorderThickness" Value="0,0,1,0" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AppSeparatorBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.sidebar-header">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource AppSecondaryTextBrush}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Sidebar ListBox -->
+    <Style Selector="Border.sidebar ListBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style Selector="Border.sidebar ListBoxItem">
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="Margin" Value="4,1" />
+        <Setter Property="CornerRadius" Value="5" />
+    </Style>
+
+    <!-- smooth background transition for list items -->
+    <Style Selector="Border.sidebar ListBoxItem /template/ ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.12" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Border.sidebar ListBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppListHoverBrush}" />
+    </Style>
+
+    <Style Selector="Border.sidebar ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppListSelectedBrush}" />
+    </Style>
+
+    <Style Selector="Border.sidebar ListBoxItem:selected:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppListSelectedHoverBrush}" />
+    </Style>
+
+    <!-- Cards -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource AppCardBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AppSeparatorBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="14" />
+    </Style>
+
+    <!-- Controls Bar -->
+    <Style Selector="Border.controls-bar">
+        <Setter Property="Padding" Value="4,6" />
+    </Style>
+
+    <!-- Input/Output TextBoxes -->
+    <Style Selector="TextBox.input-area, TextBox.output-area">
+        <Setter Property="MinHeight" Value="120" />
+        <Setter Property="Background" Value="{DynamicResource AppInputBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontFamily" Value="Consolas,Menlo,monospace" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
+    <!-- Labels -->
+    <Style Selector="TextBlock.section-label">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource AppSectionLabelBrush}" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+    </Style>
+
+    <Style Selector="TextBlock.meta-text">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="{DynamicResource AppMutedTextBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.status-text">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{DynamicResource AppMutedTextBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.placeholder">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource AppPlaceholderTextBrush}" />
+    </Style>
+
+    <!-- ── Buttons: Primary ── -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="#0078D4" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Padding" Value="14,7" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+
+    <Style Selector="Button.primary /template/ ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.14" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#1484D8" />
+    </Style>
+
+    <Style Selector="Button.primary:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="#005A9E" />
+    </Style>
+
+    <!-- ── Buttons: Secondary ── -->
+    <Style Selector="Button.secondary">
+        <Setter Property="Background" Value="{DynamicResource AppSecondaryBtnBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource AppSecondaryBtnFgBrush}" />
+        <Setter Property="Padding" Value="14,7" />
+        <Setter Property="CornerRadius" Value="5" />
+    </Style>
+
+    <Style Selector="Button.secondary /template/ ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.14" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppSecondaryBtnHoverBrush}" />
+    </Style>
+
+    <!-- ── Buttons: Danger ── -->
+    <Style Selector="Button.danger">
+        <Setter Property="Background" Value="#B91C1C" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Padding" Value="14,7" />
+        <Setter Property="CornerRadius" Value="5" />
+    </Style>
+
+    <Style Selector="Button.danger /template/ ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.14" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#991B1B" />
+    </Style>
+
+    <Style Selector="Button.danger:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="#7F1D1D" />
+    </Style>
+
+    <!-- ── Buttons: Icon ── -->
+    <Style Selector="Button.icon-btn">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="6,4" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource AppIconBtnFgBrush}" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
+    <Style Selector="Button.icon-btn /template/ ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.12" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.icon-btn:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppIconBtnHoverBgBrush}" />
+    </Style>
+
+    <Style Selector="Button.icon-btn:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource AppPrimaryTextBrush}" />
+    </Style>
+
+    <Style Selector="Button.icon-btn:pressed /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="0.7" />
+    </Style>
+
+</Styles>

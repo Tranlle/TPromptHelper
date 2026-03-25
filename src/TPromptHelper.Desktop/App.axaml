@@ -1,0 +1,60 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TPromptHelper.Desktop.App"
+             RequestedThemeVariant="Dark">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="AppToolbarBrush"          Color="#1A1A1A" />
+                    <SolidColorBrush x:Key="AppSidebarBrush"           Color="#252526" />
+                    <SolidColorBrush x:Key="AppCardBrush"              Color="#1E1E1E" />
+                    <SolidColorBrush x:Key="AppInputBrush"             Color="#2D2D30" />
+                    <SolidColorBrush x:Key="AppSeparatorBrush"         Color="#333333" />
+                    <SolidColorBrush x:Key="AppPrimaryTextBrush"       Color="#E0E0E0" />
+                    <SolidColorBrush x:Key="AppSecondaryTextBrush"     Color="#AAAAAA" />
+                    <SolidColorBrush x:Key="AppMutedTextBrush"         Color="#888888" />
+                    <SolidColorBrush x:Key="AppPlaceholderTextBrush"   Color="#555555" />
+                    <SolidColorBrush x:Key="AppSectionLabelBrush"      Color="#9CDCFE" />
+                    <SolidColorBrush x:Key="AppFlyoutBodyTextBrush"    Color="#CCCCCC" />
+                    <SolidColorBrush x:Key="AppSecondaryBtnBrush"      Color="#3C3C3C" />
+                    <SolidColorBrush x:Key="AppSecondaryBtnHoverBrush" Color="#4C4C4C" />
+                    <SolidColorBrush x:Key="AppSecondaryBtnFgBrush"    Color="#D0D0D0" />
+                    <SolidColorBrush x:Key="AppListHoverBrush"         Color="#2A2D2E" />
+                    <SolidColorBrush x:Key="AppListSelectedBrush"      Color="#094771" />
+                    <SolidColorBrush x:Key="AppListSelectedHoverBrush" Color="#0A5285" />
+                    <SolidColorBrush x:Key="AppIconBtnFgBrush"         Color="#666666" />
+                    <SolidColorBrush x:Key="AppIconBtnHoverBgBrush"    Color="#3C3C3C" />
+                </ResourceDictionary>
+
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="AppToolbarBrush"          Color="#F3F3F3" />
+                    <SolidColorBrush x:Key="AppSidebarBrush"           Color="#EBEBEB" />
+                    <SolidColorBrush x:Key="AppCardBrush"              Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="AppInputBrush"             Color="#F5F5F5" />
+                    <SolidColorBrush x:Key="AppSeparatorBrush"         Color="#D0D0D0" />
+                    <SolidColorBrush x:Key="AppPrimaryTextBrush"       Color="#1A1A1A" />
+                    <SolidColorBrush x:Key="AppSecondaryTextBrush"     Color="#555555" />
+                    <SolidColorBrush x:Key="AppMutedTextBrush"         Color="#777777" />
+                    <SolidColorBrush x:Key="AppPlaceholderTextBrush"   Color="#AAAAAA" />
+                    <SolidColorBrush x:Key="AppSectionLabelBrush"      Color="#0057A8" />
+                    <SolidColorBrush x:Key="AppFlyoutBodyTextBrush"    Color="#333333" />
+                    <SolidColorBrush x:Key="AppSecondaryBtnBrush"      Color="#E0E0E0" />
+                    <SolidColorBrush x:Key="AppSecondaryBtnHoverBrush" Color="#D0D0D0" />
+                    <SolidColorBrush x:Key="AppSecondaryBtnFgBrush"    Color="#333333" />
+                    <SolidColorBrush x:Key="AppListHoverBrush"         Color="#E0E0E0" />
+                    <SolidColorBrush x:Key="AppListSelectedBrush"      Color="#CCE4F7" />
+                    <SolidColorBrush x:Key="AppListSelectedHoverBrush" Color="#B8D8F0" />
+                    <SolidColorBrush x:Key="AppIconBtnFgBrush"         Color="#666666" />
+                    <SolidColorBrush x:Key="AppIconBtnHoverBgBrush"    Color="#D8D8D8" />
+                </ResourceDictionary>
+
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://TPromptHelper.Desktop/Assets/styles.axaml" />
+    </Application.Styles>
+</Application>

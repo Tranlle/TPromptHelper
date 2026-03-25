@@ -1,0 +1,172 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TPromptHelper.Desktop.ViewModels"
+             xmlns:models="using:TPromptHelper.Core.Models"
+             x:Class="TPromptHelper.Desktop.Views.ApiLogView"
+             x:DataType="vm:ApiLogViewModel"
+             MinWidth="800" MinHeight="500">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Toolbar -->
+        <DockPanel Grid.Row="0" Margin="16,12,16,8">
+            <Button DockPanel.Dock="Right" Click="OnClearClick"
+                    Classes="secondary">清空</Button>
+        </DockPanel>
+
+        <!-- list + detail -->
+        <Grid Grid.Row="1" ColumnDefinitions="280,*">
+
+            <!-- Left: log list -->
+            <Border Grid.Column="0" BorderThickness="0,0,1,0" BorderBrush="{DynamicResource AppSeparatorBrush}">
+                <ListBox ItemsSource="{Binding Entries}"
+                         SelectedItem="{Binding SelectedEntry}"
+                         Background="Transparent" BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:ApiLogEntry">
+                            <Grid RowDefinitions="Auto,Auto" Margin="2">
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="✓" FontSize="11" Foreground="#4EC994" VerticalAlignment="Center"
+                                               IsVisible="{Binding IsSuccess}" />
+                                    <TextBlock Text="✗" FontSize="11" Foreground="#C06060" VerticalAlignment="Center"
+                                               IsVisible="{Binding IsSuccess, Converter={x:Static BoolConverters.Not}}" />
+                                    <TextBlock Text="{Binding ModelName}" FontWeight="SemiBold"
+                                               FontSize="12" Foreground="{DynamicResource AppPrimaryTextBrush}" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{Binding Timestamp, StringFormat=\{0:HH:mm:ss\}}"
+                                               Classes="meta-text" />
+                                    <TextBlock Text="{Binding Duration, StringFormat=\{0:ss\\.fff\}s}"
+                                               Classes="meta-text" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+
+            <!-- Right: detail -->
+            <ScrollViewer Grid.Column="1"
+                          IsVisible="{Binding SelectedEntry, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <StackPanel Spacing="12" Margin="16">
+
+                    <!-- Header -->
+                    <StackPanel Spacing="4">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Text="{Binding SelectedEntry.Provider}" Classes="section-label" />
+                            <TextBlock Text="{Binding SelectedEntry.ModelName}"
+                                       FontWeight="SemiBold" Foreground="{DynamicResource AppPrimaryTextBrush}" />
+                            <TextBlock Text="成功" Foreground="#4EC994" FontSize="12" VerticalAlignment="Center"
+                                       IsVisible="{Binding SelectedEntry.IsSuccess}" />
+                            <TextBlock Text="失败" Foreground="#C06060" FontSize="12" VerticalAlignment="Center"
+                                       IsVisible="{Binding SelectedEntry.IsSuccess, Converter={x:Static BoolConverters.Not}}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="16">
+                            <TextBlock Text="{Binding SelectedEntry.Timestamp, StringFormat=\{0:yyyy-MM-dd HH:mm:ss\}}"
+                                       Classes="meta-text" />
+                            <TextBlock Text="{Binding SelectedEntry.Duration, StringFormat=耗时 \{0:ss\\.fff\}s}"
+                                       Classes="meta-text" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Rectangle Height="1" Fill="{DynamicResource AppSeparatorBrush}" />
+
+                    <!-- Token Usage & Cost -->
+                    <StackPanel Spacing="6" IsVisible="{Binding SelectedEntry.IsSuccess}">
+                        <TextBlock Text="TOKEN 用量" Classes="section-label" />
+                        <StackPanel Orientation="Horizontal" Spacing="20">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="输入" Classes="meta-text" />
+                                <TextBlock Text="{Binding SelectedEntry.PromptTokens}" FontWeight="SemiBold" />
+                            </StackPanel>
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="输出" Classes="meta-text" />
+                                <TextBlock Text="{Binding SelectedEntry.CompletionTokens}" FontWeight="SemiBold" />
+                            </StackPanel>
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="合计" Classes="meta-text" />
+                                <TextBlock Text="{Binding SelectedEntry.TotalTokens}" FontWeight="SemiBold" />
+                            </StackPanel>
+                            <StackPanel Spacing="2"
+                                        IsVisible="{Binding SelectedEntry.EstimatedCost, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <TextBlock Text="预估费用" Classes="meta-text" />
+                                <StackPanel Orientation="Horizontal" Spacing="2">
+                                    <TextBlock Text="{Binding SelectedEntry.Currency}" FontWeight="SemiBold" Foreground="#4EC994" />
+                                    <TextBlock Text="{Binding SelectedEntry.EstimatedCost, StringFormat=\{0:F6\}}"
+                                               FontWeight="SemiBold" Foreground="#4EC994" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Rectangle Height="1" Fill="{DynamicResource AppSeparatorBrush}" />
+
+                    <!-- Request URL -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="REQUEST URL" Classes="section-label" />
+                        <TextBox Text="{Binding SelectedEntry.RequestUrl, Mode=OneWay}"
+                                 IsReadOnly="True" TextWrapping="Wrap"
+                                 Classes="output-area" />
+                    </StackPanel>
+
+                    <!-- Request Body -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="REQUEST BODY" Classes="section-label" />
+                        <TextBox Text="{Binding SelectedEntry.RequestBody, Mode=OneWay}"
+                                 IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                                 Classes="output-area" MaxHeight="160" />
+                    </StackPanel>
+
+                    <!-- System Prompt -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="SYSTEM PROMPT" Classes="section-label" />
+                        <TextBox Text="{Binding SelectedEntry.SystemPrompt, Mode=OneWay}"
+                                 IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                                 Classes="output-area" MaxHeight="160" />
+                    </StackPanel>
+
+                    <!-- User Input -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="USER INPUT" Classes="section-label" />
+                        <TextBox Text="{Binding SelectedEntry.UserInput, Mode=OneWay}"
+                                 IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                                 Classes="output-area" MaxHeight="160" />
+                    </StackPanel>
+
+                    <!-- Response -->
+                    <StackPanel Spacing="6" IsVisible="{Binding SelectedEntry.IsSuccess}">
+                        <TextBlock Text="RESPONSE" Classes="section-label" />
+                        <TextBox Text="{Binding SelectedEntry.Response, Mode=OneWay}"
+                                 IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                                 Classes="output-area" MaxHeight="200" />
+                    </StackPanel>
+
+                    <!-- Response Body -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="RESPONSE BODY" Classes="section-label" />
+                        <TextBox Text="{Binding SelectedEntry.ResponseBody, Mode=OneWay}"
+                                 IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                                 Classes="output-area" MaxHeight="240" />
+                    </StackPanel>
+
+                    <!-- Error -->
+                    <StackPanel Spacing="6"
+                                IsVisible="{Binding SelectedEntry.IsSuccess, Converter={x:Static BoolConverters.Not}}">
+                        <TextBlock Text="ERROR" Classes="section-label" Foreground="#C06060" />
+                        <TextBox Text="{Binding SelectedEntry.ErrorMessage, Mode=OneWay}"
+                                 IsReadOnly="True" TextWrapping="Wrap"
+                                 Classes="output-area" Foreground="#C06060" />
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Empty state -->
+            <TextBlock Grid.Column="1"
+                       Text="选择左侧记录查看详情"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Classes="placeholder"
+                       IsVisible="{Binding SelectedEntry, Converter={x:Static ObjectConverters.IsNull}}" />
+        </Grid>
+    </Grid>
+</UserControl>

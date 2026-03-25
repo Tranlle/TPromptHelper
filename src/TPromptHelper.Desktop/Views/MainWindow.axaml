@@ -1,0 +1,180 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TPromptHelper.Desktop.ViewModels"
+        xmlns:models="using:TPromptHelper.Core.Models"
+        xmlns:views="using:TPromptHelper.Desktop.Views"
+        xmlns:conv="using:TPromptHelper.Desktop.Converters"
+        x:Class="TPromptHelper.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="TPromptHelper - 提示词优化器"
+        Icon="/Assets/icon.png"
+        Width="1200" Height="800"
+        MinWidth="800" MinHeight="600">
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Classes="toolbar">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!-- Left: Title + Log + Stats -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                    <TextBlock Text="TPromptHelper" Classes="app-title" />
+                    <Button Command="{Binding OpenApiLogCommand}" Classes="icon-btn"
+                            ToolTip.Tip="API 请求日志" VerticalAlignment="Center" Padding="8,4">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="📋" FontSize="13" VerticalAlignment="Center" />
+                            <TextBlock Text="日志" FontSize="12" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding OpenTokenStatsCommand}" Classes="icon-btn"
+                            ToolTip.Tip="Token 消费统计" VerticalAlignment="Center" Padding="8,4">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="📊" FontSize="13" VerticalAlignment="Center" />
+                            <TextBlock Text="统计" FontSize="12" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Right: Model dropdown + Settings -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8"
+                            HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="模型：" VerticalAlignment="Center"
+                               Foreground="{DynamicResource AppMutedTextBrush}" FontSize="12" />
+                    <ComboBox ItemsSource="{Binding ModelProfiles}"
+                              SelectedItem="{Binding SelectedModel}"
+                              MinWidth="180" VerticalAlignment="Center">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:ModelProfile">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Command="{Binding OpenSettingsCommand}" Classes="icon-btn"
+                            ToolTip.Tip="设置" VerticalAlignment="Center" Padding="8,4">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="⚙" FontSize="13" VerticalAlignment="Center" />
+                            <TextBlock Text="设置" FontSize="12" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Sidebar -->
+        <Border DockPanel.Dock="Left" Classes="sidebar" Width="220">
+            <DockPanel>
+                <!-- Sidebar header with + button -->
+                <Border DockPanel.Dock="Top" BorderThickness="0,0,0,1" BorderBrush="#333333">
+                    <Grid ColumnDefinitions="*,Auto" Margin="12,0">
+                        <TextBlock Grid.Column="0" Text="会话列表" Classes="sidebar-header"
+                                   Margin="0" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Command="{Binding NewSessionCommand}"
+                                Classes="icon-btn" ToolTip.Tip="新建会话"
+                                FontSize="18" FontWeight="Light"
+                                Padding="4,0" VerticalAlignment="Center">+</Button>
+                    </Grid>
+                </Border>
+
+                <ListBox ItemsSource="{Binding Sessions}"
+                         SelectedItem="{Binding SelectedSession}"
+                         SelectionMode="Single">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:OptimizationSession">
+                            <Grid ColumnDefinitions="*,Auto">
+
+                                <!-- 普通模式：标题文本 -->
+                                <TextBlock Grid.Column="0" Text="{Binding Title}"
+                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                                    <TextBlock.IsVisible>
+                                        <MultiBinding Converter="{x:Static conv:ReferenceEqualsConverter.NotInstance}">
+                                            <Binding Path="$parent[Window].DataContext.RenamingSession" />
+                                            <Binding />
+                                        </MultiBinding>
+                                    </TextBlock.IsVisible>
+                                </TextBlock>
+
+                                <!-- 重命名模式：可编辑输入框 -->
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding $parent[Window].DataContext.RenameTitle}"
+                                         BorderThickness="0" Padding="0"
+                                         VerticalAlignment="Center"
+                                         Background="Transparent">
+                                    <TextBox.IsVisible>
+                                        <MultiBinding Converter="{x:Static conv:ReferenceEqualsConverter.Instance}">
+                                            <Binding Path="$parent[Window].DataContext.RenamingSession" />
+                                            <Binding />
+                                        </MultiBinding>
+                                    </TextBox.IsVisible>
+                                    <TextBox.KeyBindings>
+                                        <KeyBinding Gesture="Return"
+                                                    Command="{Binding $parent[Window].DataContext.ConfirmRenameCommand}" />
+                                        <KeyBinding Gesture="Escape"
+                                                    Command="{Binding $parent[Window].DataContext.CancelRenameCommand}" />
+                                    </TextBox.KeyBindings>
+                                </TextBox>
+
+                                <!-- 按钮区 -->
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <Button Command="{Binding $parent[Window].DataContext.StartRenameCommand}"
+                                            CommandParameter="{Binding}"
+                                            Classes="icon-btn" Content="✎" ToolTip.Tip="重命名">
+                                        <Button.IsVisible>
+                                            <MultiBinding Converter="{x:Static conv:ReferenceEqualsConverter.NotInstance}">
+                                                <Binding Path="$parent[Window].DataContext.RenamingSession" />
+                                                <Binding />
+                                            </MultiBinding>
+                                        </Button.IsVisible>
+                                    </Button>
+                                    <Button Command="{Binding $parent[Window].DataContext.DeleteSessionCommand}"
+                                            CommandParameter="{Binding}"
+                                            Classes="icon-btn" Content="×" ToolTip.Tip="删除">
+                                        <Button.IsVisible>
+                                            <MultiBinding Converter="{x:Static conv:ReferenceEqualsConverter.NotInstance}">
+                                                <Binding Path="$parent[Window].DataContext.RenamingSession" />
+                                                <Binding />
+                                            </MultiBinding>
+                                        </Button.IsVisible>
+                                    </Button>
+                                    <Button Command="{Binding $parent[Window].DataContext.ConfirmRenameCommand}"
+                                            Classes="icon-btn" Content="✓" Foreground="#4EC994" ToolTip.Tip="确认">
+                                        <Button.IsVisible>
+                                            <MultiBinding Converter="{x:Static conv:ReferenceEqualsConverter.Instance}">
+                                                <Binding Path="$parent[Window].DataContext.RenamingSession" />
+                                                <Binding />
+                                            </MultiBinding>
+                                        </Button.IsVisible>
+                                    </Button>
+                                    <Button Command="{Binding $parent[Window].DataContext.CancelRenameCommand}"
+                                            Classes="icon-btn" Content="✕" Foreground="#C06060" ToolTip.Tip="取消">
+                                        <Button.IsVisible>
+                                            <MultiBinding Converter="{x:Static conv:ReferenceEqualsConverter.Instance}">
+                                                <Binding Path="$parent[Window].DataContext.RenamingSession" />
+                                                <Binding />
+                                            </MultiBinding>
+                                        </Button.IsVisible>
+                                    </Button>
+                                </StackPanel>
+
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid>
+            <TextBlock Text="选择或新建一个会话开始使用"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Classes="placeholder"
+                       IsVisible="{Binding ActiveSession, Converter={x:Static ObjectConverters.IsNull}}" />
+            <ContentControl Content="{Binding ActiveSession}"
+                            IsVisible="{Binding ActiveSession, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <ContentControl.DataTemplates>
+                    <DataTemplate DataType="vm:SessionViewModel">
+                        <views:SessionView />
+                    </DataTemplate>
+                </ContentControl.DataTemplates>
+            </ContentControl>
+        </Grid>
+    </DockPanel>
+</Window>

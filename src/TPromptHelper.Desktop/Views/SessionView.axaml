@@ -1,0 +1,160 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TPromptHelper.Desktop.ViewModels"
+             x:Class="TPromptHelper.Desktop.Views.SessionView"
+             x:DataType="vm:SessionViewModel">
+
+    <Grid RowDefinitions="*,Auto,*,Auto" Margin="16" RowSpacing="8">
+
+        <!-- Raw Input -->
+        <Border Grid.Row="0" Classes="card">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="原始输入" Classes="section-label" />
+                <TextBox Text="{Binding RawInput}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         Watermark="输入您要优化的提示词..."
+                         Classes="input-area" />
+            </DockPanel>
+        </Border>
+
+        <!-- Controls -->
+        <Border Grid.Row="1" Classes="controls-bar">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <TextBlock Text="优化策略：" VerticalAlignment="Center" />
+                <ComboBox ItemsSource="{Binding Strategies}"
+                          SelectedItem="{Binding SelectedStrategy}"
+                          MinWidth="140" />
+                <Button Classes="icon-btn" VerticalAlignment="Center"
+                        ToolTip.Tip="查看策略说明">
+                    <Button.Content>
+                        <Border Width="18" Height="18" CornerRadius="9"
+                                BorderThickness="1.5" BorderBrush="#666666">
+                            <TextBlock Text="?" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="#888888"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                    </Button.Content>
+                    <Button.Flyout>
+                        <Flyout Placement="Bottom" ShowMode="TransientWithDismissOnPointerMoveAway">
+                            <Border Background="{DynamicResource AppSidebarBrush}"
+                                    BorderBrush="{DynamicResource AppSeparatorBrush}"
+                                    BorderThickness="1" CornerRadius="6"
+                                    Padding="16,14" MaxWidth="400">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="优化策略说明"
+                                               FontWeight="SemiBold" FontSize="13"
+                                               Foreground="{DynamicResource AppPrimaryTextBrush}" />
+                                    <Rectangle Height="1" Fill="{DynamicResource AppSeparatorBrush}" />
+
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="Structured · 结构化" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AppSectionLabelBrush}" FontSize="12" />
+                                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                                   Foreground="{DynamicResource AppFlyoutBodyTextBrush}"
+                                                   Text="补充角色定义、任务目标、执行步骤和输出格式，将模糊需求转化为结构清晰的指令。通用性最强。" />
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="FewShot · 少样本" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AppSectionLabelBrush}" FontSize="12" />
+                                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                                   Foreground="{DynamicResource AppFlyoutBodyTextBrush}"
+                                                   Text="自动补充 2-3 个「输入→输出」示例，让模型通过例子理解意图。适合有固定输出格式或风格要求的任务。" />
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="ChainOfThought · 思维链" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AppSectionLabelBrush}" FontSize="12" />
+                                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                                   Foreground="{DynamicResource AppFlyoutBodyTextBrush}"
+                                                   Text="要求模型逐步思考并展示推理过程，减少跳步出错。适合逻辑推理、数学分析、多步判断类任务。" />
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="Concise · 精简" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AppSectionLabelBrush}" FontSize="12" />
+                                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                                   Foreground="{DynamicResource AppFlyoutBodyTextBrush}"
+                                                   Text="删除冗余表达，保留核心意图。适合原始提示词过于啰嗦，或需要控制 Token 消耗的场景。" />
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="Technical · 技术向" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AppSectionLabelBrush}" FontSize="12" />
+                                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                                   Foreground="{DynamicResource AppFlyoutBodyTextBrush}"
+                                                   Text="补充编程语言、框架、代码规范、输出格式（代码块）及错误处理要求。专为代码相关任务设计。" />
+                                    </StackPanel>
+
+                                    <Rectangle Height="1" Fill="{DynamicResource AppSeparatorBrush}" />
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="选择建议" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AppSecondaryTextBrush}" FontSize="11" />
+                                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                                   Foreground="{DynamicResource AppSecondaryTextBrush}"
+                                                   Text="日常通用 → Structured　｜　写代码 → Technical　｜　需推理 → ChainOfThought　｜　固定格式 → FewShot　｜　精简压缩 → Concise" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+                <!-- 执行/停止切换按钮：固定宽度保证两态一致 -->
+                <Grid Width="128">
+                    <!-- 空闲态：▶ 执行优化 -->
+                    <Button Command="{Binding OptimizeCommand}"
+                            Classes="primary"
+                            HotKey="Ctrl+Enter"
+                            HorizontalAlignment="Stretch"
+                            IsVisible="{Binding IsOptimizing, Converter={x:Static BoolConverters.Not}}">
+                        <StackPanel Orientation="Horizontal" Spacing="7"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="▶" FontSize="11" VerticalAlignment="Center" />
+                            <TextBlock Text="执行优化" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- 运行态：停止 -->
+                    <Button Command="{Binding CancelOptimizeCommand}"
+                            Classes="danger"
+                            HorizontalAlignment="Stretch"
+                            IsVisible="{Binding IsOptimizing}">
+                        <StackPanel Orientation="Horizontal" Spacing="7"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="■" FontSize="10" VerticalAlignment="Center" />
+                            <TextBlock Text="停止" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+                <TextBlock Text="{Binding StatusMessage}"
+                           VerticalAlignment="Center"
+                           Classes="status-text" />
+            </StackPanel>
+        </Border>
+
+        <!-- Optimized Output -->
+        <Border Grid.Row="2" Classes="card">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="优化结果" Classes="section-label" />
+                <TextBox Text="{Binding OptimizedOutput, Mode=OneWay}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         IsReadOnly="True"
+                         Cursor="IBeam"
+                         Classes="output-area" />
+            </DockPanel>
+        </Border>
+
+        <!-- Action Bar -->
+        <StackPanel Grid.Row="3" Spacing="6">
+            <TextBox Text="{Binding ContinueSuggestion}"
+                     Watermark="附加优化建议（可选），例如：让语气更正式、增加代码注释..." />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Command="{Binding CopyOutputCommand}">复制结果</Button>
+                <Button Command="{Binding ContinueOptimizeCommand}" Classes="primary">继续优化</Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

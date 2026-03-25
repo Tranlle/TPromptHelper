@@ -1,0 +1,10 @@
+/src/TPromptHelper.Core/bin/
+/src/TPromptHelper.Core/obj/
+/src/TPromptHelper.Desktop/bin/
+/src/TPromptHelper.Desktop/obj/
+/src/TPromptHelper.Infrastructure/bin/
+/src/TPromptHelper.Infrastructure/obj/
+/src/TPromptHelper.Services/bin/
+/src/TPromptHelper.Services/obj/
+/src/TPromptHelper.Tests/bin/
+/src/TPromptHelper.Tests/obj/
