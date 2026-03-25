@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:TPromptHelper.Desktop.ViewModels"
+             xmlns:controls="using:TPromptHelper.Desktop.Controls"
              x:Class="TPromptHelper.Desktop.Views.SessionView"
              x:DataType="vm:SessionViewModel">
 
@@ -134,16 +135,14 @@
             </StackPanel>
         </Border>
 
-        <!-- Optimized Output -->
+        <!-- Optimized Output (Markdown) -->
         <Border Grid.Row="2" Classes="card">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Top" Text="优化结果" Classes="section-label" />
-                <TextBox Text="{Binding OptimizedOutput, Mode=OneWay}"
-                         AcceptsReturn="True"
-                         TextWrapping="Wrap"
-                         IsReadOnly="True"
-                         Cursor="IBeam"
-                         Classes="output-area" />
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Auto">
+                    <controls:MarkdownTextBlock Text="{Binding OptimizedOutput}" />
+                </ScrollViewer>
             </DockPanel>
         </Border>
 
@@ -153,7 +152,17 @@
                      Watermark="附加优化建议（可选），例如：让语气更正式、增加代码注释..." />
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <Button Command="{Binding CopyOutputCommand}">复制结果</Button>
-                <Button Command="{Binding ContinueOptimizeCommand}" Classes="primary">继续优化</Button>
+                <Button Command="{Binding ContinueOptimizeCommand}"
+                        Classes="primary"
+                        IsEnabled="{Binding IsTypewriterActive, Converter={x:Static BoolConverters.Not}}">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="继续优化" VerticalAlignment="Center" />
+                        <TextBlock Text="(打字机进行中)" FontSize="10"
+                                   VerticalAlignment="Center"
+                                   Foreground="#888888"
+                                   IsVisible="{Binding IsTypewriterActive}" />
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </StackPanel>
     </Grid>
