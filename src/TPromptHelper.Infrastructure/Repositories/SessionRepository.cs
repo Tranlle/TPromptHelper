@@ -19,33 +19,33 @@ public sealed class SessionRepository : ISessionRepository
     }
 
     /// <inheritdoc />
-    public Task<IEnumerable<OptimizationSession>> GetAllAsync()
+    public async Task<IEnumerable<OptimizationSession>> GetAllAsync()
     {
-        using var conn = _db.CreateConnection();
-        var rows = conn.Query("SELECT * FROM Sessions ORDER BY ModifiedAt DESC");
-        return Task.FromResult(rows.Select(MapRow).AsEnumerable());
+        await using var conn = _db.CreateConnection();
+        var rows = await conn.QueryAsync("SELECT * FROM Sessions ORDER BY ModifiedAt DESC");
+        return rows.Select(MapRow);
     }
 
     /// <inheritdoc />
-    public Task<OptimizationSession?> GetByIdAsync(Guid id)
+    public async Task<OptimizationSession?> GetByIdAsync(Guid id)
     {
-        using var conn = _db.CreateConnection();
-        var row = conn.QueryFirstOrDefault(
+        await using var conn = _db.CreateConnection();
+        var row = await conn.QueryFirstOrDefaultAsync(
             "SELECT * FROM Sessions WHERE Id = @Id",
             new { Id = id.ToString() });
-        return Task.FromResult(row is null ? null : MapRow(row));
+        return row is null ? null : MapRow(row);
     }
 
     /// <inheritdoc />
-    public Task SaveAsync(OptimizationSession session)
+    public async Task SaveAsync(OptimizationSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
 
         session.ModifiedAt = DateTime.UtcNow;
         var treeJson = JsonSerializer.Serialize(session.ConversationTree);
 
-        using var conn = _db.CreateConnection();
-        conn.Execute("""
+        await using var conn = _db.CreateConnection();
+        await conn.ExecuteAsync("""
             INSERT INTO Sessions (Id, Title, CreatedAt, ModifiedAt, DefaultStrategy, CurrentModelProfileId, ConversationTreeJson)
             VALUES (@Id, @Title, @CreatedAt, @ModifiedAt, @DefaultStrategy, @CurrentModelProfileId, @ConversationTreeJson)
             ON CONFLICT(Id) DO UPDATE SET
@@ -64,16 +64,13 @@ public sealed class SessionRepository : ISessionRepository
             CurrentModelProfileId = session.CurrentModelProfileId?.ToString(),
             ConversationTreeJson = treeJson
         });
-
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        using var conn = _db.CreateConnection();
-        conn.Execute("DELETE FROM Sessions WHERE Id = @Id", new { Id = id.ToString() });
-        return Task.CompletedTask;
+        await using var conn = _db.CreateConnection();
+        await conn.ExecuteAsync("DELETE FROM Sessions WHERE Id = @Id", new { Id = id.ToString() });
     }
 
     private static OptimizationSession MapRow(dynamic row) => new()

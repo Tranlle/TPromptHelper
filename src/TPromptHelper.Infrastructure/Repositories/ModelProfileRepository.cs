@@ -18,42 +18,42 @@ public sealed class ModelProfileRepository : IModelProfileRepository
     }
 
     /// <inheritdoc />
-    public Task<IEnumerable<ModelProfile>> GetAllAsync()
+    public async Task<IEnumerable<ModelProfile>> GetAllAsync()
     {
-        using var conn = _db.CreateConnection();
-        var rows = conn.Query("SELECT * FROM ModelProfiles ORDER BY CreatedAt ASC");
-        return Task.FromResult(rows.Select(MapRow).AsEnumerable());
+        await using var conn = _db.CreateConnection();
+        var rows = await conn.QueryAsync("SELECT * FROM ModelProfiles ORDER BY CreatedAt ASC");
+        return rows.Select(MapRow);
     }
 
     /// <inheritdoc />
-    public Task<ModelProfile?> GetByIdAsync(Guid id)
+    public async Task<ModelProfile?> GetByIdAsync(Guid id)
     {
-        using var conn = _db.CreateConnection();
-        var row = conn.QueryFirstOrDefault(
+        await using var conn = _db.CreateConnection();
+        var row = await conn.QueryFirstOrDefaultAsync(
             "SELECT * FROM ModelProfiles WHERE Id = @Id",
             new { Id = id.ToString() });
-        return Task.FromResult(row is null ? null : MapRow(row));
+        return row is null ? null : MapRow(row);
     }
 
     /// <inheritdoc />
-    public Task<ModelProfile?> GetDefaultAsync()
+    public async Task<ModelProfile?> GetDefaultAsync()
     {
-        using var conn = _db.CreateConnection();
-        var row = conn.QueryFirstOrDefault(
+        await using var conn = _db.CreateConnection();
+        var row = await conn.QueryFirstOrDefaultAsync(
             "SELECT * FROM ModelProfiles WHERE IsDefault = 1 LIMIT 1");
-        return Task.FromResult(row is null ? null : MapRow(row));
+        return row is null ? null : MapRow(row);
     }
 
     /// <inheritdoc />
-    public Task SaveAsync(ModelProfile profile)
+    public async Task SaveAsync(ModelProfile profile)
     {
         ArgumentNullException.ThrowIfNull(profile);
 
-        using var conn = _db.CreateConnection();
+        await using var conn = _db.CreateConnection();
         if (profile.IsDefault)
-            conn.Execute("UPDATE ModelProfiles SET IsDefault = 0");
+            await conn.ExecuteAsync("UPDATE ModelProfiles SET IsDefault = 0");
 
-        conn.Execute("""
+        await conn.ExecuteAsync("""
             INSERT INTO ModelProfiles (Id, Name, Provider, ApiEndpoint, ModelName, MaxTokens, Temperature, EncryptedApiKey, IsDefault, CreatedAt, Currency, InputPricePer1M, OutputPricePer1M)
             VALUES (@Id, @Name, @Provider, @ApiEndpoint, @ModelName, @MaxTokens, @Temperature, @EncryptedApiKey, @IsDefault, @CreatedAt, @Currency, @InputPricePer1M, @OutputPricePer1M)
             ON CONFLICT(Id) DO UPDATE SET
@@ -84,16 +84,13 @@ public sealed class ModelProfileRepository : IModelProfileRepository
             profile.InputPricePer1M,
             profile.OutputPricePer1M
         });
-
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        using var conn = _db.CreateConnection();
-        conn.Execute("DELETE FROM ModelProfiles WHERE Id = @Id", new { Id = id.ToString() });
-        return Task.CompletedTask;
+        await using var conn = _db.CreateConnection();
+        await conn.ExecuteAsync("DELETE FROM ModelProfiles WHERE Id = @Id", new { Id = id.ToString() });
     }
 
     private static ModelProfile MapRow(dynamic row) => new()

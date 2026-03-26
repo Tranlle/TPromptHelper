@@ -18,12 +18,12 @@ public sealed class TokenUsageRepository : ITokenUsageRepository
     }
 
     /// <inheritdoc />
-    public Task SaveAsync(TokenUsageRecord record)
+    public async Task SaveAsync(TokenUsageRecord record)
     {
         ArgumentNullException.ThrowIfNull(record);
 
-        using var conn = _db.CreateConnection();
-        conn.Execute("""
+        await using var conn = _db.CreateConnection();
+        await conn.ExecuteAsync("""
             INSERT INTO TokenUsageRecords
                 (Id, Timestamp, Provider, ModelName, PromptTokens, CompletionTokens, TotalTokens, EstimatedCost, Currency)
             VALUES
@@ -40,24 +40,21 @@ public sealed class TokenUsageRepository : ITokenUsageRepository
             record.EstimatedCost,
             record.Currency
         });
-
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public Task<IEnumerable<TokenUsageRecord>> GetAllAsync()
+    public async Task<IEnumerable<TokenUsageRecord>> GetAllAsync()
     {
-        using var conn = _db.CreateConnection();
-        var rows = conn.Query("SELECT * FROM TokenUsageRecords ORDER BY Timestamp DESC");
-        return Task.FromResult(rows.Select(MapRow).AsEnumerable());
+        await using var conn = _db.CreateConnection();
+        var rows = await conn.QueryAsync("SELECT * FROM TokenUsageRecords ORDER BY Timestamp DESC");
+        return rows.Select(MapRow);
     }
 
     /// <inheritdoc />
-    public Task ClearAsync()
+    public async Task ClearAsync()
     {
-        using var conn = _db.CreateConnection();
-        conn.Execute("DELETE FROM TokenUsageRecords");
-        return Task.CompletedTask;
+        await using var conn = _db.CreateConnection();
+        await conn.ExecuteAsync("DELETE FROM TokenUsageRecords");
     }
 
     private static TokenUsageRecord MapRow(dynamic row) => new()

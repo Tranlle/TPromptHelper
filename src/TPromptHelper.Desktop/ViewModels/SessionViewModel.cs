@@ -7,7 +7,7 @@ using TPromptHelper.Core.Models;
 
 namespace TPromptHelper.Desktop.ViewModels;
 
-public partial class SessionViewModel : ViewModelBase
+public partial class SessionViewModel : ViewModelBase, IDisposable
 {
     private readonly IPromptOptimizer _optimizer;
     private readonly ISessionRepository _sessionRepo;
@@ -187,5 +187,14 @@ public partial class SessionViewModel : ViewModelBase
             foreach (var child in FlattenTree(node.Children))
                 yield return child;
         }
+    }
+
+    public void Dispose()
+    {
+        _typewriterTimer.Stop();
+        _typewriterTimer.Dispose();
+        _cts?.Cancel();
+        _cts?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

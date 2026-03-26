@@ -7,7 +7,7 @@ using TPromptHelper.Core.Models;
 
 namespace TPromptHelper.Desktop.ViewModels;
 
-public partial class MainWindowViewModel(ISessionRepository sessionRepo, IModelProfileRepository modelRepo) : ViewModelBase
+public partial class MainWindowViewModel(ISessionRepository sessionRepo, IModelProfileRepository modelRepo, IServiceProvider serviceProvider) : ViewModelBase
 {
     [ObservableProperty] private ObservableCollection<OptimizationSession> _sessions = [];
     [ObservableProperty] private ObservableCollection<ModelProfile> _modelProfiles = [];
@@ -50,7 +50,11 @@ public partial class MainWindowViewModel(ISessionRepository sessionRepo, IModelP
     [RelayCommand]
     private void OpenSession(OptimizationSession session)
     {
-        var vm = App.Services.GetRequiredService<SessionViewModel>();
+        if (ActiveSession != null)
+        {
+            ActiveSession.Dispose();
+        }
+        var vm = serviceProvider.GetRequiredService<SessionViewModel>();
         vm.Load(session, SelectedModel);
         ActiveSession = vm;
     }
@@ -61,7 +65,10 @@ public partial class MainWindowViewModel(ISessionRepository sessionRepo, IModelP
         Sessions.Remove(session);
         await sessionRepo.DeleteAsync(session.Id);
         if (ActiveSession?.Session?.Id == session.Id)
+        {
+            ActiveSession.Dispose();
             ActiveSession = null;
+        }
     }
 
     [RelayCommand]
@@ -95,26 +102,26 @@ public partial class MainWindowViewModel(ISessionRepository sessionRepo, IModelP
     public event Func<SettingsViewModel, Task>? SettingsRequested;
 
     [RelayCommand]
-    private async Task OpenApiLog()
+    private async Task OpenApiLogAsync()
     {
-        var vm = App.Services.GetRequiredService<ApiLogViewModel>();
+        var vm = serviceProvider.GetRequiredService<ApiLogViewModel>();
         if (ApiLogRequested != null)
             await ApiLogRequested.Invoke(vm);
     }
 
     [RelayCommand]
-    private async Task OpenTokenStats()
+    private async Task OpenTokenStatsAsync()
     {
-        var vm = App.Services.GetRequiredService<TokenStatsViewModel>();
+        var vm = serviceProvider.GetRequiredService<TokenStatsViewModel>();
         await vm.LoadAsync();
         if (TokenStatsRequested != null)
             await TokenStatsRequested.Invoke(vm);
     }
 
     [RelayCommand]
-    private async Task OpenSettings()
+    private async Task OpenSettingsAsync()
     {
-        var vm = App.Services.GetRequiredService<SettingsViewModel>();
+        var vm = serviceProvider.GetRequiredService<SettingsViewModel>();
         await vm.InitializeAsync();
         if (SettingsRequested != null)
             await SettingsRequested.Invoke(vm);

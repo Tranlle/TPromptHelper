@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -11,6 +12,10 @@ namespace TPromptHelper.Desktop.Controls;
 /// </summary>
 public class MarkdownTextBlock : UserControl
 {
+    private static readonly Regex InlineCodeRegex = new(@"`([^`]+)`", RegexOptions.Compiled);
+    private static readonly Regex BoldRegex = new(@"\*\*([^*]+)\*\*", RegexOptions.Compiled);
+    private static readonly Regex ItalicRegex = new(@"\*([^*]+)\*", RegexOptions.Compiled);
+
     /// <summary>
     /// Markdown 文本依赖属性
     /// </summary>
@@ -262,16 +267,13 @@ public class MarkdownTextBlock : UserControl
 
         // 移除块级格式标记，保留文本
         // 行内代码 `code`
-        text = System.Text.RegularExpressions.Regex.Replace(
-            text, @"`([^`]+)`", "$1");
+        text = InlineCodeRegex.Replace(text, "$1");
 
         // 粗体 **text** 或 __text__
-        text = System.Text.RegularExpressions.Regex.Replace(
-            text, @"\*\*([^*]+)\*\*", "$1");
+        text = BoldRegex.Replace(text, "$1");
 
         // 斜体 *text* 或 _text_
-        text = System.Text.RegularExpressions.Regex.Replace(
-            text, @"\*([^*]+)\*", "$1");
+        text = ItalicRegex.Replace(text, "$1");
 
         return text;
     }

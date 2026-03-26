@@ -11,6 +11,7 @@ public partial class ModelSettingsViewModel(IModelProfileRepository repo, IEncry
     [ObservableProperty] private ObservableCollection<ModelProfile> _profiles = [];
     [ObservableProperty] private ModelProfile? _editingProfile;
     [ObservableProperty] private string _rawApiKey = string.Empty;
+    private bool _isApiKeyModified;
 
     public string[] Providers { get; } = ["openai", "anthropic", "qwen", "kimi", "ollama", "custom"];
     public string[] Currencies { get; } = ["¥", "$"];
@@ -26,6 +27,7 @@ public partial class ModelSettingsViewModel(IModelProfileRepository repo, IEncry
     {
         EditingProfile = new ModelProfile { Provider = "openai", ModelName = "gpt-4o" };
         RawApiKey = string.Empty;
+        _isApiKeyModified = false;
     }
 
     [RelayCommand]
@@ -34,14 +36,25 @@ public partial class ModelSettingsViewModel(IModelProfileRepository repo, IEncry
         EditingProfile = profile;
         RawApiKey = string.IsNullOrEmpty(profile.EncryptedApiKey) ? string.Empty
             : encryption.Decrypt(profile.EncryptedApiKey);
+        _isApiKeyModified = false;
+    }
+
+    partial void OnRawApiKeyChanged(string value)
+    {
+        _isApiKeyModified = true;
     }
 
     [RelayCommand]
     private async Task SaveProfileAsync()
     {
         if (EditingProfile is null) return;
-        if (!string.IsNullOrWhiteSpace(RawApiKey))
-            EditingProfile.EncryptedApiKey = encryption.Encrypt(RawApiKey);
+
+        if (_isApiKeyModified)
+        {
+            EditingProfile.EncryptedApiKey = string.IsNullOrWhiteSpace(RawApiKey)
+                ? string.Empty
+                : encryption.Encrypt(RawApiKey);
+        }
 
         await repo.SaveAsync(EditingProfile);
         if (!Profiles.Contains(EditingProfile))

@@ -8,6 +8,7 @@ namespace TPromptHelper.Services;
 /// </summary>
 public sealed class ApiLogger : IApiLogger
 {
+    private const int MaxEntries = 1000;
     private readonly List<ApiLogEntry> _entries = [];
     private readonly object _lock = new();
 
@@ -35,6 +36,8 @@ public sealed class ApiLogger : IApiLogger
         lock (_lock)
         {
             _entries.Insert(0, entry);
+            if (_entries.Count > MaxEntries)
+                _entries.RemoveRange(MaxEntries, _entries.Count - MaxEntries);
         }
         LogChanged?.Invoke();
     }

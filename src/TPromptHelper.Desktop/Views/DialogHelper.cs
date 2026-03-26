@@ -60,7 +60,7 @@ public static class DialogHelper
         if (Application.Current?.RequestedThemeVariant is { } theme)
             dialog.RequestedThemeVariant = theme;
 
-        noBtn.Click  += (_, _) => dialog.Close();
+        noBtn.Click += (_, _) => dialog.Close();
         yesBtn.Click += (_, _) => { confirmed = true; dialog.Close(); };
 
         if (owner is Window ownerWindow)

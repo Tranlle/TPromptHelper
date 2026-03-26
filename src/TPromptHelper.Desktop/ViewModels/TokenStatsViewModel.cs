@@ -34,10 +34,10 @@ public partial class TokenStatsViewModel(ITokenUsageRepository repo) : ViewModel
     {
         var records = (await repo.GetAllAsync()).ToList();
 
-        TotalRequests         = records.Count;
-        TotalPromptTokens     = records.Sum(r => r.PromptTokens);
+        TotalRequests = records.Count;
+        TotalPromptTokens = records.Sum(r => r.PromptTokens);
         TotalCompletionTokens = records.Sum(r => r.CompletionTokens);
-        TotalTokens           = records.Sum(r => r.TotalTokens);
+        TotalTokens = records.Sum(r => r.TotalTokens);
 
         var costsByCurrency = records
             .Where(r => r.EstimatedCost.HasValue && !string.IsNullOrEmpty(r.Currency))

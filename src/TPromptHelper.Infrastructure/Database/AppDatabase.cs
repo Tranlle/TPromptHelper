@@ -10,7 +10,7 @@ public sealed class AppDatabase
 {
     private readonly string _connectionString;
     private readonly SemaphoreSlim _initLock = new(1, 1);
-    private bool _initialized;
+    private int _initialized;
 
     public AppDatabase(string dbPath)
     {
@@ -40,14 +40,14 @@ public sealed class AppDatabase
     /// </summary>
     private void EnsureInitialized()
     {
-        if (_initialized) return;
+        if (Interlocked.CompareExchange(ref _initialized, 0, 0) == 1) return;
 
         _initLock.Wait();
         try
         {
-            if (_initialized) return;
+            if (Interlocked.CompareExchange(ref _initialized, 0, 0) == 1) return;
             Initialize();
-            _initialized = true;
+            Interlocked.Exchange(ref _initialized, 1);
         }
         finally
         {
